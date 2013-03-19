@@ -3,12 +3,12 @@ require 'roo'
 require '../lib/gen_sheet.rb'
 
 class TestGenSheet < Test::Unit::TestCase
-  
+
   def setup
   end
 
   def test_xls_template
-    xls = Roo::Spreadsheet.open('./files/template.xls')
+    xls = Roo::Excel.new('./files/template.xls')
     assert_not_nil(xls, "Roo could not open the sample XLS sheet.")
     assert(xls.inspect, "XLS inspection fails.")
     gens = GenSheet.new
