@@ -19,6 +19,8 @@ class TestGenSheet < Test::Unit::TestCase
     ods = Roo::Spreadsheet.open('./files/template.ods')
     assert_not_nil(ods, "Roo could not open the sample ODS sheet.")
     assert(ods.inspect, "ODS inspection fails.")
+    gens = GenSheet.new
+    p ods.cell
   end
 
 end
