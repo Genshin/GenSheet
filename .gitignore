@@ -1,3 +1,5 @@
 *.swo
 *.swp
-*.DS_store
+.DS_Store
+.project
+Gemfile.lock

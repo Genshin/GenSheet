@@ -8,7 +8,7 @@ class TestGenSheet < Test::Unit::TestCase
   end
 
   def test_xls_template
-    xls = Roo::Excel.new('./files/template.xls')
+    xls = Roo::Spreadsheet.open('./files/template.xls')
     assert_not_nil(xls, "Roo could not open the sample XLS sheet.")
     assert(xls.inspect, "XLS inspection fails.")
     gens = GenSheet.new
@@ -20,7 +20,7 @@ class TestGenSheet < Test::Unit::TestCase
     assert_not_nil(ods, "Roo could not open the sample ODS sheet.")
     assert(ods.inspect, "ODS inspection fails.")
     gens = GenSheet.new
-    p ods.cell
+    gens.roo_to_ods(ods, "out.ods")
   end
 
 end
