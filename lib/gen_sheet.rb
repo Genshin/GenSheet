@@ -3,17 +3,23 @@ require 'writeexcel'
 require 'odf/spreadsheet'
 
 class GenSheet
+  @workbook
+  @formats
+  @worksheets
 
-  def roo_to_xls(workbook, filename)
-    puts "converting sheet"
+  def extract_instances_from_sheets(sheets)
+
+  end
+
+  def roo_to_xls(sheets, filename)
     outbook = WriteExcel.new(filename)
 
-    @workbook = workbook.instance_variable_get('@workbook')
+    @workbook = sheets.instance_variable_get('@workbook')
     @formats = @workbook.instance_variable_get('@formats')
     @worksheets = @workbook.instance_variable_get('@worksheets')
 
     i = 0
-    workbook.each_with_pagename do |name, sheet|
+    sheets.each_with_pagename do |name, sheet|
       outsheet =  outbook.add_worksheet(name)
 
       # mergeしてあるセルの取り出し
@@ -26,7 +32,7 @@ class GenSheet
       end
 
       # フォント設定の取り出し
-      getfonts =  workbook.instance_variable_get('@fonts')
+      getfonts = sheets.instance_variable_get('@fonts')
       sheet.each_with_index do |row, y|
         row.each_with_index do |cell, x|
           if cell != nil
