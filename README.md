@@ -1,10 +1,11 @@
 GenSheet
+========
 
-Spreadsheet generator for Roo.
+GenSheet is a spreadsheet [xls and ods] generator for Roo.
+Roo is awesome at reading and processing spreadsheets all on its own but has no file generation.
 
-Allows sheets and sheet data loaded or created from Roo to be exported/saved as xls or ods.
-During export sheet data and formatting is preserved from the original sheet or modified Roo data as possible.
-This allows you to use spreadsheets as templates, loading them with roo, filling or altering data, then exporting.
+During export sheet data and formatting is preserved from the original sheet or Roo object.
+This allows you to use spreadsheets as templates, loading them with Roo, filling or altering data, then exporting.
 
 Future plans are to add in-sheet hooks and data markers to allow for true template-like handling of source sheets.
 
