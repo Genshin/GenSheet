@@ -5,3 +5,8 @@
 Gemfile.lock
 Guardfile
 *.gem
+./tmp/
+./spec/files/xls_out.xls
+./spec/files/ods_out.ods
+./spec/files/xls_out.ods
+./spec/files/ods_out.xls
