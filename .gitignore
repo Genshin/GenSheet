@@ -3,3 +3,4 @@
 .DS_Store
 .project
 Gemfile.lock
+Guardfile
