@@ -78,30 +78,30 @@ class GenSheet
   end
 
   def to_ods(filename)
-#    puts "converting sheet"
-#    outbook = ODF::SpreadSheet.new
-#
-#    workbook.each_with_pagename do |name, sheet|
-#      # シート作成
-#      ob_table = outbook.table name
-#
-#      sheet.each_with_index do |row, y|
-#        # 行作成
-#        ob_row = ob_table.row
-#
-#        row.each_with_index do |cell, x|
-#          # スタイル作成
-#          outbook.style 'font-style', :family => :cell do
-#            #property :text, 'font-weight' => 'bold', 'color' => '#ff0000'
-#          end
-#
-#          # セル作成、スタイル適用
-#          ob_cell = ob_row.cell(cell, :style => 'font-style')
-#        end
-#      end
-#    end
-#
-#    outbook.write_to filename
+    puts "converting sheet"
+    outbook = ODF::SpreadSheet.new
+
+    workbook.each_with_pagename do |name, sheet|
+      # シート作成
+      ob_table = outbook.table name
+
+      sheet.each_with_index do |row, y|
+        # 行作成
+        ob_row = ob_table.row
+
+        row.each_with_index do |cell, x|
+          # スタイル作成
+          outbook.style 'font-style', :family => :cell do
+            #property :text, 'font-weight' => 'bold', 'color' => '#ff0000'
+          end
+
+          # セル作成、スタイル適用
+          ob_cell = ob_row.cell(cell, :style => 'font-style')
+        end
+      end
+    end
+
+    outbook.write_to filename
   end
 
   def initialize(roo)
