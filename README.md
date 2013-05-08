@@ -1,4 +1,4 @@
-GenSheet
+GenSheet [![Code Climate](https://codeclimate.com/github/Genshin/GenSheet.png)](https://codeclimate.com/github/Genshin/GenSheet)
 ========
 
 GenSheet is a spreadsheet [xls and ods] generator for Roo.
