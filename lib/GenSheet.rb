@@ -120,7 +120,6 @@ class GenSheet
   end
 
   def to_ods(filename)
-    puts "converting sheet"
     @outbook_ods = ODF::SpreadSheet.new
 
     tables = Array.new
