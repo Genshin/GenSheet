@@ -1,9 +1,10 @@
 Gem::Specification.new do |s|
   s.name        = 'gen_sheet'
-  s.version     = '0.0.4'
-  s.summary     = "A spreadsheet generator (ODS, XLS) for Roo."
-  s.description = "Takes a Roo spreadsheet object and renders it in XLS or ODS. Also allows you to use a template sheet and fill it with data from Roo, then output a rendered sheet."
-  s.authors     = ["Rei Kagetsuki"]
+  s.version     = '0.0.5'
+  s.summary     = "A spreadsheet generator (ODS, XLS) and parsing tool. Uses Roo as a backend and attempts to implement newer features on top of it."
+  s.description = "A spreadsheet generator (ODS, XLS) and parsing tool. Uses Roo as a backend and attempts to implement newer features on top of it."
+  s.authors     = ["Rei Kagetsuki", "Rika Yoshida"]
+  s.license     = ["LGPL"]
   s.email       = 'zero@genshin.org'
   s.files        = `git ls-files`.split("\n")
   s.homepage    = 'https://github.com/Genshin/GenSheet'

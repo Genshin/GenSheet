@@ -1,42 +1,45 @@
-require 'roo'
 require 'writeexcel'
 require 'odf/spreadsheet'
 
-class GenSheet
-
-  @roo
-
+class GenSheet < Roo
   def to_xls(filename)
-    @outbook_xls = WriteExcel.new(filename)
+    xls = WriteExcel.new(filename)
 
-    workbook = @roo.instance_variable_get('@workbook')
-    formats = workbook.instance_variable_get('@formats')
-    worksheets = workbook.instance_variable_get('@worksheets')
+    #workbook = self.instance_variable_get('@workbook')
+    #formats = workbook.instance_variable_get('@formats')
+    #worksheets = workbook.instance_variable_get('@worksheets')
 
     # 出力シート準備、元シート分解
-    outsheets = Array.new
-    originalsheets = Array.new
-    names = Array.new
-    pre_sheet_xls(outsheets, originalsheets, names)
+    outsheets = []
+    originalsheets = []
+    names = []
+    _pre_sheet_xls(outsheets, originalsheets, names)
 
     # mergeしてあるセルのセット
-    merges = Array.new
+    merges = []
     set_mergedcell_sheet(worksheets, outsheets, merges)
 
     # シートのセット
     set_sheet_xls(outsheets, originalsheets, names, merges)
 
-    # # 出力
-    # for i in 0..originalsheets.size - 1
-      # originalsheets[i].parse do |row|
-        # puts row
-      # end
-    # end
-
-    @outbook_xls.close
+    xls.close
   end
 
-  def pre_sheet_xls(outsheets, originalsheets, names)
+  def to_ods(filename)
+    ods = ODF::SpreadSheet.new
+
+    tables = Array.new
+    sheets = Array.new
+    pre_sheet_ods(tables, sheets)
+
+    unless filename.nil?
+      ods.write_to filename
+
+    return ods
+  end
+
+  private
+  def _pre_sheet_xls(outsheets, originalsheets, names)
     @roo.each_with_pagename do |name, sheet|
       outsheets << @outbook_xls.add_worksheet(name)
       originalsheets << sheet.clone
@@ -119,16 +122,6 @@ class GenSheet
     format.set_valign('vcenter')
   end
 
-  def to_ods(filename)
-    @outbook_ods = ODF::SpreadSheet.new
-
-    tables = Array.new
-    sheets = Array.new
-    pre_sheet_ods(tables, sheets)
-
-    @outbook_ods.write_to filename
-  end
-
   def pre_sheet_ods(tables, sheets)
     @roo.each_with_pagename do |name, sheet|
       # シート作成
@@ -159,9 +152,4 @@ class GenSheet
       ob_cell = ob_row.cell(cell, :style => 'font-style')
     end
   end
-
-  def initialize(roo)
-    @roo = roo
-  end
-
 end
