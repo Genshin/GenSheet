@@ -6,7 +6,7 @@ describe 'opens an ods file' do
   end
 end
 
-describe '#to_ods' do
+describe 'ods #to_ods' do
   it 'creates an ods file' do
     open_ods()
     @ods.to_ods('./spec/files/ods_out.ods')
