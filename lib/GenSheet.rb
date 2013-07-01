@@ -5,10 +5,6 @@ class GenSheet < Roo
   def to_xls(filename)
     xls = WriteExcel.new(filename)
 
-    #workbook = self.instance_variable_get('@workbook')
-    #formats = workbook.instance_variable_get('@formats')
-    #worksheets = workbook.instance_variable_get('@worksheets')
-
     # 出力シート準備、元シート分解
     outsheets = []
     originalsheets = []
@@ -28,12 +24,13 @@ class GenSheet < Roo
   def to_ods(filename)
     ods = ODF::SpreadSheet.new
 
-    tables = Array.new
-    sheets = Array.new
+    tables = []
+    sheets = []
     pre_sheet_ods(tables, sheets)
 
     unless filename.nil?
       ods.write_to filename
+    end
 
     return ods
   end
@@ -99,19 +96,21 @@ class GenSheet < Roo
       #:top => 1,         # border
       #:left => 1,        #
       #:right => 1,       #
-      :color => font.instance_variable_get('@color'),
-      :italic => font.instance_variable_get('@italic') ? 1 : 0,
-      :font => font.instance_variable_get('@name'),
-      :outline => font.instance_variable_get('@outline'),
-      :shadow => font.instance_variable_get('@shadow'),
-      :size => font.instance_variable_get('@size'),
-      :strikeout => font.instance_variable_get('@strikeout'),
-      :underline => font..instance_variable_get('@underline') == :none ? 0 : 1,  # アンダーラインの種類は4つだけどとりあえず
-      :bold => font.instance_variable_get('@weight') > 400 ? 1 : 0              # weightが普通だと400、boldだと700になるようなのでとりあえず
-      #:encoding => font.encoding,                    #
-      #:escapement => font.escapement,                # fontにまとめて入っていたけど
-      #:family => font.family,                        # どれに対応するのか..
-      #:previous_fast_key => font.previous_fast_key,  #
+      color:    font.instance_variable_get('@color'),
+      italic:   font.instance_variable_get('@italic') ? 1 : 0,
+      font:     font.instance_variable_get('@name'),
+      outline:  font.instance_variable_get('@outline'),
+      shadow:   font.instance_variable_get('@shadow'),
+      size:     font.instance_variable_get('@size'),
+      strikeout:  font.instance_variable_get('@strikeout'),
+      # アンダーラインの種類は4つだけどとりあえず
+      underline:  font..instance_variable_get('@underline') == :none ? 0 : 1,
+      # weightが普通だと400、boldだと700になるようなのでとりあえず
+      bold: font.instance_variable_get('@weight') > 400 ? 1 : 0
+      # :encoding => font.encoding,                    #
+      # :escapement => font.escapement,                # fontにまとめて入っていたけど
+      # :family => font.family,                        # どれに対応するのか..
+      # :previous_fast_key => font.previous_fast_key,  #
     )
 
     return format
@@ -145,11 +144,11 @@ class GenSheet < Roo
   def set_cell_ods(row, ob_row)
     row.each_with_index do |cell, x|
       # スタイル作成
-      @outbook_ods.style 'font-style', :family => :cell do
-        #property :text, 'font-weight' => 'bold', 'color' => '#ff0000'
+      @outbook_ods.style :'font-style', family: :cell do
+        # property :text, 'font-weight': 'bold', color: '#ff0000'
       end
       # セル作成、スタイル適用
-      ob_cell = ob_row.cell(cell, :style => 'font-style')
+      ob_cell = ob_row.cell(cell, style: 'font-style')
     end
   end
 end

@@ -8,7 +8,6 @@ end
 
 describe '#to_ods' do
   it 'creates an ods file' do
-    open_ods()
-    @ods.to_ods('./spec/files/ods_out.ods')
+    open_ods().to_ods('./spec/files/ods_out.ods')
   end
 end

@@ -8,7 +8,6 @@ end
 
 describe '#to_xls' do
   it 'creates an xls file' do
-    create_gens_from_xls()
-    @xls.to_xls('./spec/files/xls_out.xls')
+    create_gens_from_xls().to_xls('./spec/files/xls_out.xls')
   end
 end
