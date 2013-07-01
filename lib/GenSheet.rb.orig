@@ -49,10 +49,6 @@ class Roo::GenericSpreadsheet
   def to_xls(filename = nil)
     xls = WriteExcel.new(filename)
 
-    #workbook = self.instance_variable_get('@workbook')
-    #formats = workbook.instance_variable_get('@formats')
-    #worksheets = workbook.instance_variable_get('@worksheets')
-
     # 出力シート準備、元シート分解
     outsheets, originalsheets, names = [], [], []
     _workbook_to_xls(xls, outsheets, originalsheets, names)
@@ -68,6 +64,22 @@ class Roo::GenericSpreadsheet
     return xls
   end
 
+<<<<<<< HEAD
+  def to_ods(filename)
+    ods = ODF::SpreadSheet.new
+
+    tables = []
+    sheets = []
+    pre_sheet_ods(tables, sheets)
+
+    unless filename.nil?
+      ods.write_to filename
+    end
+
+    return ods
+  end
+=======
+>>>>>>> origin/master
 
  private
   def _workbook_to_xls(xls, outsheets, originalsheets, names)
@@ -157,5 +169,28 @@ class Roo::GenericSpreadsheet
 end
 
 
+<<<<<<< HEAD
+  def set_sheet_ods(tables, sheets)
+    for i in 0..sheets.size - 1
+      sheets[i].each_with_index do |row, y|
+        # 行作成
+        ob_row = tables[i].row
+        set_cell_ods(row, ob_row)
+      end
+    end
+  end
+
+  def set_cell_ods(row, ob_row)
+    row.each_with_index do |cell, x|
+      # スタイル作成
+      @outbook_ods.style :'font-style', family: :cell do
+        # property :text, 'font-weight': 'bold', color: '#ff0000'
+      end
+      # セル作成、スタイル適用
+      ob_cell = ob_row.cell(cell, style: 'font-style')
+    end
+  end
+=======
 class GenSheet < Roo::Spreadsheet
+>>>>>>> origin/master
 end
