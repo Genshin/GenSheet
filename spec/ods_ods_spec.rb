@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'opens an ods file' do
-  it 'opens and inspects an xls file' do
+  it 'opens and inspects an ods file' do
     open_ods()
   end
 end
