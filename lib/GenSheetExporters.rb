@@ -4,26 +4,24 @@ require 'odf/spreadsheet'
 module GenSheetExporters
   def to_ods(filename = nil)
     ods = ODF::SpreadSheet.new
+
     _workbook_to_ods(ods)
     ods.write_to(filename) unless filename.nil?
+
     return ods
   end
 
   def to_xls(filename = nil)
     xls = WriteExcel.new(filename)
 
-    # 出力シート準備、元シート分解
+    # Prepare sheets & get original sheet's data
     outsheets, originalsheets, names = [], [], []
     _workbook_to_xls(xls, outsheets, originalsheets, names)
 
-    # mergeしてあるセルのセット
-    merges = []
-    _set_sheet_mergedcells(xls, outsheets, merges)
-
-    # シートのセット
-    _set_cell_formating(xls, outsheets, originalsheets, names, merges)
+    _set_data_to_xls(xls, outsheets, originalsheets, names)
 
     xls.close
+
     return xls
   end
 
@@ -31,20 +29,22 @@ module GenSheetExporters
 
   def _workbook_to_ods(ods)
     tables, sheets = [], []
+
+    # Create sheets
     self.each_with_pagename do |name, sheet|
-      # シート作成
       tables << (ods.table name)
       sheets << sheet.clone
     end
 
     _set_ods_sheets(ods, tables, sheets)
+
     return ods
   end
 
   def _set_ods_sheets(ods, tables, sheets)
-    for i in 0..sheets.size - 1
+    (0..sheets.size - 1).each do |i|
       sheets[i].each_with_index do |row, y|
-        # 行作成
+        # Create rows
         ob_row = tables[i].row
         _set_cell_ods(ods, row, ob_row)
       end
@@ -53,11 +53,11 @@ module GenSheetExporters
 
   def _set_cell_ods(ods, row, ob_row)
     row.each_with_index do |cell, x|
-      # スタイル作成
+      # Create styles
       ods.style 'font-style', family: :cell do
         # property :text, 'font-weight' => 'bold', 'color' => '#ff0000'
       end
-      # セル作成、スタイル適用
+      # Create cell & add style
       ob_row.cell(cell, style: 'font-style')
     end
   end
@@ -70,49 +70,71 @@ module GenSheetExporters
     end
   end
 
-  def _set_sheet_mergedcells(xls, outsheets, merges)
+  def _set_data_to_xls(xls, outsheets, originalsheets, names)
+    # Take out the merged data that is separate
     worksheets = @workbook.instance_variable_get('@worksheets')
-    for i in 0..worksheets.size - 1
+    merges = _get_merge_data(worksheets) unless worksheets.nil?
+
+    # Set the data in each sheet
+    (0..outsheets.size - 1).each do |i|
+      _set_merge_data(xls, outsheets[i], merges[i]) unless merges.nil?
+      cells = _get_cell_data(originalsheets[i], names[i])
+      _get_format_data(xls, cells, merges[i]) unless merges.nil?
+      _set_cell_data(outsheets[i], cells)
+    end
+  end
+
+  def _get_merge_data(worksheets)
+    merges = []
+
+    (0..worksheets.size - 1).each do |i|
       merges << worksheets[i].instance_variable_get('@merged_cells')
-      if merges[i] != nil && merges[i] != []
-        _set_mergedcell(xls, outsheets[i], merges[i])
-      end
     end
+
+    return merges
   end
 
-  def _set_mergedcell(xls, outsheet, merge)
+  def _set_merge_data(xls, outsheet, merge)
     format = xls.add_format(align: 'merge')
-    for j in 0..merge.size - 1
-      outsheet.merge_range(merge[j][0], merge[j][2],
-                           merge[j][1], merge[j][3], '', format)
+
+    (0..merge.size - 1).each do |i|
+      outsheet.merge_range(merge[i][0], merge[i][2],
+                           merge[i][1], merge[i][3], '', format)
     end
   end
 
-  def _set_cell_formating(xls, outsheets, originalsheets, names, merges)
-    # fontもborderも入ってるけどもインデックスがわからない
-    for i in 0..originalsheets.size - 1
-      originalsheets[i].each_with_index do |row, y|
-        row.each_with_index do |cell, x|
-          font = @fonts[names[i]][[y + 1, x + 1]]
-          _set_cell_xls(xls, outsheets[i], cell, x, y, font, merges[i])
-        end
+  def _get_cell_data(originalsheet, name)
+    cells = []
+
+    originalsheet.each_with_index do |row, y|
+      row.each_with_index do |cell, x|
+        font = @fonts.nil? ? nil : @fonts[name][[y + 1, x + 1]]
+        cell = CellData.new(x, y, cell, font)
+        cells << cell
       end
     end
+
+    return cells
   end
 
-  def _set_cell_xls(xls, outsheet, cell, x, y, font, merge)
-    # cellが空の場合は何もしない
-    return if cell == nil
+  def _get_format_data(xls, cells, merge)
+    cells.each do |cell|
+      format = _set_format(xls, cell.format) unless cell.format.nil?
 
-    # 各フォントフォーマットのセット
-    format = _set_format(xls, font)
+      # add format when merged cell
+      (0..merge.size - 1).each do |i|
+        set_mergedcell_format(format) if cell.y == merge[i][0] &&
+                                         cell.x == merge[i][2]
+      end
 
-    # mergeしてあるセルの場合フォーマット追加
-    for i in 0..merge.size - 1
-      set_mergedcell_format(format) if y == merge[i][0] && x == merge[i][2]
+      cell.format = format
     end
+  end
 
-    outsheet.write(y, x, cell, format)
+  def _set_cell_data(outsheet, cells)
+    cells.each do |cell|
+      outsheet.write(cell.y, cell.x, cell.data, cell.format)
+    end
   end
 
   def _set_format(xls, font)
@@ -128,14 +150,14 @@ module GenSheetExporters
       shadow:   font.instance_variable_get('@shadow'),
       size:     font.instance_variable_get('@size'),
       strikeout:  font.instance_variable_get('@strikeout'),
-      # アンダーラインの種類は4つだけどとりあえず
+      # Underline's style have 4 pattern
       underline:  font..instance_variable_get('@underline') == :none ? 0 : 1,
-      # weightが普通だと400、boldだと700になるようなのでとりあえず
+      # Weight normal is 400, bold is 700
       bold: font.instance_variable_get('@weight') > 400 ? 1 : 0
-      # :encoding => font.encoding,                    #
-      # :escapement => font.escapement,                # fontにまとめて入っていたけど
-      # :family => font.family,                        # どれに対応するのか..
-      # :previous_fast_key => font.previous_fast_key,  #
+      # :encoding => font.encoding,
+      # :escapement => font.escapement,
+      # :family => font.family,
+      # :previous_fast_key => font.previous_fast_key,
     )
 
     return format
@@ -144,5 +166,18 @@ module GenSheetExporters
   def set_mergedcell_format(format)
     format.set_align('center')
     format.set_valign('vcenter')
+  end
+end
+
+# x position, y position, cell's data, cell's format
+class CellData
+  attr_reader :x, :y, :data, :format
+  attr_writer :format
+
+  def initialize(x, y, data, format)
+    @x = x
+    @y = y
+    @data = data
+    @format = format
   end
 end
